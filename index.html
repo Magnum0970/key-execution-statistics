@@ -1,0 +1,273 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Content-Style-Type" content="text/css">
+  <title></title>
+  <meta name="Generator" content="Cocoa HTML Writer">
+  <meta name="CocoaVersion" content="2685.4">
+  <style type="text/css">
+    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+  </style>
+</head>
+<body>
+<p class="p1">&lt;!DOCTYPE html&gt;</p>
+<p class="p1">&lt;html lang="en"&gt;</p>
+<p class="p1">&lt;head&gt;</p>
+<p class="p1">&lt;meta charset="UTF-8" /&gt;</p>
+<p class="p1">&lt;meta name="viewport" content="width=device-width, initial-scale=1.0" /&gt;</p>
+<p class="p1">&lt;title&gt;CSM Execution Dashboard&lt;/title&gt;</p>
+<p class="p1">&lt;script src="https://unpkg.com/react@18/umd/react.production.min.js"&gt;&lt;/script&gt;</p>
+<p class="p1">&lt;script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"&gt;&lt;/script&gt;</p>
+<p class="p1">&lt;script src="https://unpkg.com/@babel/standalone/babel.min.js"&gt;&lt;/script&gt;</p>
+<p class="p1">&lt;style&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }</p>
+<p class="p1"><span class="Apple-converted-space">  </span>body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f5f5f3; color: #1a1a18; min-height: 100vh; }</p>
+<p class="p1"><span class="Apple-converted-space">  </span>input, select, textarea, button { font-family: inherit; font-size: 13px; color: #1a1a18; background: #fff; border: 0.5px solid #ccc; border-radius: 6px; outline: none; transition: border-color 0.15s; }</p>
+<p class="p1"><span class="Apple-converted-space">  </span>input:focus, select:focus, textarea:focus { border-color: #888; }</p>
+<p class="p1"><span class="Apple-converted-space">  </span>button { cursor: pointer; padding: 6px 14px; background: #fff; border: 0.5px solid #bbb; border-radius: 6px; }</p>
+<p class="p1"><span class="Apple-converted-space">  </span>button:hover { background: #f1f1ef; }</p>
+<p class="p1"><span class="Apple-converted-space">  </span>select { padding: 4px 8px; }</p>
+<p class="p1"><span class="Apple-converted-space">  </span>textarea { resize: vertical; }</p>
+<p class="p1"><span class="Apple-converted-space">  </span>.card { background: #fff; border: 0.5px solid #ddd; border-radius: 12px; overflow: hidden; }</p>
+<p class="p1"><span class="Apple-converted-space">  </span>.metric { background: #f1f1ef; border-radius: 8px; padding: 12px 14px; }</p>
+<p class="p1"><span class="Apple-converted-space">  </span>.metric-label { font-size: 11px; color: #666; font-weight: 500; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 4px; }</p>
+<p class="p1"><span class="Apple-converted-space">  </span>.metric-value { font-size: 22px; font-weight: 500; }</p>
+<p class="p1"><span class="Apple-converted-space">  </span>@media (max-width: 600px) { .grid-metrics { grid-template-columns: repeat(4, 1fr) !important; } }</p>
+<p class="p1">&lt;/style&gt;</p>
+<p class="p1">&lt;/head&gt;</p>
+<p class="p1">&lt;body&gt;</p>
+<p class="p1">&lt;div id="root"&gt;&lt;/div&gt;</p>
+<p class="p1">&lt;script type="text/babel"&gt;</p>
+<p class="p1">const { useState, useMemo } = React;</p>
+<p class="p2"><br></p>
+<p class="p1">const PRODUCTS = ["Marketo", "Adobe Journey Optimizer", "Both", "Other"];</p>
+<p class="p1">const STATUSES = ["Ready for Assignment", "In Review", "Re-Assignment", "Scheduled", "In Progress", "On Hold"];</p>
+<p class="p1">const STATUS_COLORS = {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>"Ready for Assignment": { bg: "#E6F1FB", text: "#0C447C", dot: "#378ADD" },</p>
+<p class="p1"><span class="Apple-converted-space">  </span>"In Review":<span class="Apple-converted-space">            </span>{ bg: "#EEEDFE", text: "#3C3489", dot: "#7F77DD" },</p>
+<p class="p1"><span class="Apple-converted-space">  </span>"Re-Assignment":<span class="Apple-converted-space">        </span>{ bg: "#FAEEDA", text: "#633806", dot: "#BA7517" },</p>
+<p class="p1"><span class="Apple-converted-space">  </span>"Scheduled":<span class="Apple-converted-space">            </span>{ bg: "#EAF3DE", text: "#27500A", dot: "#639922" },</p>
+<p class="p1"><span class="Apple-converted-space">  </span>"In Progress":<span class="Apple-converted-space">          </span>{ bg: "#E1F5EE", text: "#085041", dot: "#1D9E75" },</p>
+<p class="p1"><span class="Apple-converted-space">  </span>"On Hold":<span class="Apple-converted-space">              </span>{ bg: "#FCEBEB", text: "#791F1F", dot: "#E24B4A" },</p>
+<p class="p1">};</p>
+<p class="p1">const HEALTH_COLORS = {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>Green:<span class="Apple-converted-space">  </span>{ bg: "#EAF3DE", text: "#27500A", dot: "#639922" },</p>
+<p class="p1"><span class="Apple-converted-space">  </span>Yellow: { bg: "#FAEEDA", text: "#633806", dot: "#BA7517" },</p>
+<p class="p1"><span class="Apple-converted-space">  </span>Red:<span class="Apple-converted-space">    </span>{ bg: "#FCEBEB", text: "#791F1F", dot: "#E24B4A" },</p>
+<p class="p1">};</p>
+<p class="p1">const CSM_COLORS = ["#378ADD","#1D9E75","#7F77DD","#D85A30","#BA7517","#D4537E","#0F6E56","#533AB7","#E24B4A","#639922"];</p>
+<p class="p2"><br></p>
+<p class="p1">const initCSMs = () =&gt; [</p>
+<p class="p1"><span class="Apple-converted-space">  </span>{ id: 1, name: "Parley", clients: [</p>
+<p class="p1"><span class="Apple-converted-space">    </span>{ id: 1, name: "Client 1", status: "In Progress", health: "Green", product: "Marketo", notes: "" },</p>
+<p class="p1"><span class="Apple-converted-space">    </span>{ id: 2, name: "Client 2", status: "In Progress", health: "Green", product: "Marketo", notes: "" },</p>
+<p class="p1"><span class="Apple-converted-space">    </span>{ id: 3, name: "Client 3", status: "In Progress", health: "Green", product: "Marketo", notes: "" },</p>
+<p class="p1"><span class="Apple-converted-space">    </span>{ id: 4, name: "Client 4", status: "In Progress", health: "Green", product: "Marketo", notes: "" },</p>
+<p class="p1"><span class="Apple-converted-space">  </span>]},</p>
+<p class="p1"><span class="Apple-converted-space">  </span>{ id: 2, name: "Karen", clients: [</p>
+<p class="p1"><span class="Apple-converted-space">    </span>{ id: 1, name: "Client 1", status: "In Progress", health: "Green", product: "Marketo", notes: "" },</p>
+<p class="p1"><span class="Apple-converted-space">    </span>{ id: 2, name: "Client 2", status: "In Progress", health: "Green", product: "Marketo", notes: "" },</p>
+<p class="p1"><span class="Apple-converted-space">    </span>{ id: 3, name: "Client 3", status: "In Progress", health: "Green", product: "Marketo", notes: "" },</p>
+<p class="p1"><span class="Apple-converted-space">    </span>{ id: 4, name: "Client 4", status: "In Progress", health: "Green", product: "Marketo", notes: "" },</p>
+<p class="p1"><span class="Apple-converted-space">  </span>]},</p>
+<p class="p1">];</p>
+<p class="p2"><br></p>
+<p class="p1">const nextId = arr =&gt; arr.length ? Math.max(...arr.map(x =&gt; x.id)) + 1 : 1;</p>
+<p class="p2"><br></p>
+<p class="p1">function Avatar({ name, color, size = 36 }) {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const initials = name.split(" ").map(w =&gt; w[0]).join("").slice(0, 2).toUpperCase() || "?";</p>
+<p class="p1"><span class="Apple-converted-space">  </span>return (</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div style={{ width: size, height: size, borderRadius: "50%", background: color + "22", display: "flex", alignItems: "center", justifyContent: "center", fontSize: size * 0.36, fontWeight: 500, color, flexShrink: 0, border: `1.5px solid ${color}44` }}&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>{initials}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>);</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">function StatusBadge({ status }) {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const c = STATUS_COLORS[status] || { bg: "#f1f1ef", text: "#444", dot: "#888" };</p>
+<p class="p1"><span class="Apple-converted-space">  </span>return (</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;span style={{ background: c.bg, color: c.text, fontSize: 11, fontWeight: 500, padding: "3px 8px", borderRadius: 20, whiteSpace: "nowrap", display: "inline-flex", alignItems: "center", gap: 5 }}&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;span style={{ width: 6, height: 6, borderRadius: "50%", background: c.dot, display: "inline-block" }} /&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>{status}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>);</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">function HealthDot({ health }) {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const c = HEALTH_COLORS[health] || HEALTH_COLORS.Green;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>return &lt;span style={{ width: 10, height: 10, borderRadius: "50%", background: c.dot, display: "inline-block", flexShrink: 0 }} title={health} /&gt;;</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">function MiniBar({ csms }) {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const total = csms.reduce((s, c) =&gt; s + c.clients.length, 0) || 1;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>return (</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div style={{ display: "flex", height: 6, borderRadius: 4, overflow: "hidden", gap: 1, marginTop: 8 }}&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>{csms.map((csm, i) =&gt; (</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div key={csm.id} title={`${csm.name}: ${csm.clients.length}`} style={{ flex: csm.clients.length || 0.05, background: CSM_COLORS[i % CSM_COLORS.length] }} /&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>))}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>);</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">function Dashboard() {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const [csms, setCSMs] = useState(initCSMs);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const [newCSMName, setNewCSMName] = useState("");</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const [filterStatus, setFilterStatus] = useState("All");</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const [filterHealth, setFilterHealth] = useState("All");</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const [activeTab, setActiveTab] = useState("all");</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const [expandedCSM, setExpandedCSM] = useState(null);</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>const updateCSM = (csmId, fn) =&gt; setCSMs(prev =&gt; prev.map(c =&gt; c.id === csmId ? fn(c) : c));</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const updateClient = (csmId, clientId, field, val) =&gt; updateCSM(csmId, csm =&gt; ({ ...csm, clients: csm.clients.map(cl =&gt; cl.id === clientId ? { ...cl, [field]: val } : cl) }));</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const addClient = csmId =&gt; updateCSM(csmId, csm =&gt; ({ ...csm, clients: [...csm.clients, { id: nextId(csm.clients), name: "", status: "Ready for Assignment", health: "Green", product: "Marketo", notes: "" }] }));</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const removeClient = (csmId, clientId) =&gt; updateCSM(csmId, csm =&gt; ({ ...csm, clients: csm.clients.filter(cl =&gt; cl.id !== clientId) }));</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const addCSM = () =&gt; { if (!newCSMName.trim()) return; setCSMs(prev =&gt; [...prev, { id: nextId(prev), name: newCSMName.trim(), clients: [] }]); setNewCSMName(""); };</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const removeCSM = id =&gt; setCSMs(prev =&gt; prev.filter(c =&gt; c.id !== id));</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const renameCSM = (id, name) =&gt; updateCSM(id, c =&gt; ({ ...c, name }));</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>const teamStats = useMemo(() =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const all = csms.flatMap(c =&gt; c.clients);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const counts = {};</p>
+<p class="p1"><span class="Apple-converted-space">    </span>STATUSES.forEach(s =&gt; counts[s] = 0);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>all.forEach(cl =&gt; { if (counts[cl.status] !== undefined) counts[cl.status]++; });</p>
+<p class="p1"><span class="Apple-converted-space">    </span>return { total: all.length, ...counts, red: all.filter(cl =&gt; cl.health === "Red").length };</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}, [csms]);</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>const filteredCSMs = useMemo(() =&gt; csms.map(csm =&gt; ({</p>
+<p class="p1"><span class="Apple-converted-space">    </span>...csm,</p>
+<p class="p1"><span class="Apple-converted-space">    </span>clients: csm.clients.filter(cl =&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>(filterStatus === "All" || cl.status === filterStatus) &amp;&amp;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>(filterHealth === "All" || cl.health === filterHealth)</p>
+<p class="p1"><span class="Apple-converted-space">    </span>)</p>
+<p class="p1"><span class="Apple-converted-space">  </span>})).filter(csm =&gt; activeTab === "all" || csm.id === parseInt(activeTab)), [csms, filterStatus, filterHealth, activeTab]);</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>const exportCSV = () =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const rows = [["CSM","Client","Status","Health","Product","Notes"]];</p>
+<p class="p1"><span class="Apple-converted-space">    </span>csms.forEach(csm =&gt; csm.clients.forEach(cl =&gt; rows.push([csm.name, cl.name, cl.status, cl.health, cl.product, cl.notes.replace(/,/g,";")])));</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const csv = rows.map(r =&gt; r.map(v =&gt; `"${v}"`).join(",")).join("\n");</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const a = document.createElement("a"); a.href = "data:text/csv;charset=utf-8," + encodeURIComponent(csv); a.download = "csm_dashboard.csv"; a.click();</p>
+<p class="p1"><span class="Apple-converted-space">  </span>};</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>return (</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 0 2rem" }}&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>{/* Header */}</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div style={{ background: "#fff", borderBottom: "0.5px solid #ddd", padding: "14px 20px", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 8, position: "sticky", top: 0, zIndex: 10 }}&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div style={{ fontSize: 11, fontWeight: 500, color: "#D85A30", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 2 }}&gt;Customer Success&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;h1 style={{ fontSize: 20, fontWeight: 500 }}&gt;Key Execution Dashboard&lt;/h1&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;button onClick={exportCSV}&gt;Export CSV&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div style={{ padding: "1rem 1.25rem" }}&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>{/* Team summary */}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div style={{ marginBottom: "1rem" }}&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div style={{ fontSize: 11, fontWeight: 500, color: "#666", marginBottom: 10, textTransform: "uppercase", letterSpacing: "0.05em" }}&gt;Team overview — {csms.length} CSMs&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div className="grid-metrics" style={{ display: "grid", gridTemplateColumns: "repeat(8, 1fr)", gap: 8, marginBottom: 12 }}&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>{[["Total", teamStats.total, "#D85A30"],["In Progress", teamStats["In Progress"], "#1D9E75"],["Ready", teamStats["Ready for Assignment"], "#378ADD"],["In Review", teamStats["In Review"], "#7F77DD"],["On Hold", teamStats["On Hold"], "#BA7517"],["Re-Assign", teamStats["Re-Assignment"], "#D4537E"],["Scheduled", teamStats["Scheduled"], "#639922"],["Red Accts", teamStats.red, "#E24B4A"]].map(([l,v,c]) =&gt; (</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;div key={l} className="metric"&gt;&lt;div className="metric-label"&gt;{l}&lt;/div&gt;&lt;div className="metric-value" style={{ color: c }}&gt;{v}&lt;/div&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>))}</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div style={{ fontSize: 12, color: "#666", marginBottom: 4 }}&gt;Engagement load by CSM&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;MiniBar csms={csms} /&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginTop: 6 }}&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>{csms.map((csm, i) =&gt; (</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;span key={csm.id} style={{ fontSize: 11, color: "#666", display: "flex", alignItems: "center", gap: 4 }}&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;span style={{ width: 8, height: 8, borderRadius: "50%", background: CSM_COLORS[i % CSM_COLORS.length], display: "inline-block" }} /&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>{csm.name} ({csm.clients.length})</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>))}</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>{/* Filters + tabs */}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", marginBottom: "1rem", paddingBottom: "1rem", borderBottom: "0.5px solid #ddd" }}&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;select value={filterStatus} onChange={e =&gt; setFilterStatus(e.target.value)}&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;option value="All"&gt;All statuses&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>{STATUSES.map(s =&gt; &lt;option key={s}&gt;{s}&lt;/option&gt;)}</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/select&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;select value={filterHealth} onChange={e =&gt; setFilterHealth(e.target.value)}&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;option value="All"&gt;All health&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;option&gt;Green&lt;/option&gt;&lt;option&gt;Yellow&lt;/option&gt;&lt;option&gt;Red&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/select&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div style={{ flex: 1 }} /&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div style={{ display: "flex", gap: 4, flexWrap: "wrap" }}&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>{[{ id: "all", label: "All CSMs" }, ...csms.map(c =&gt; ({ id: String(c.id), label: c.name }))].map(tab =&gt; (</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;button key={tab.id} onClick={() =&gt; setActiveTab(tab.id)} style={{ fontSize: 12, padding: "4px 10px", background: activeTab === tab.id ? "#f1f1ef" : "#fff", fontWeight: activeTab === tab.id ? 500 : 400 }}&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>{tab.label}</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>))}</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>{/* CSM cards */}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>{filteredCSMs.map((csm, ci) =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const srcCSM = csms.find(c =&gt; c.id === csm.id);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const inProg = srcCSM.clients.filter(cl =&gt; cl.status === "In Progress").length;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const redCount = srcCSM.clients.filter(cl =&gt; cl.health === "Red").length;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const isExpanded = expandedCSM === csm.id || filteredCSMs.length === 1;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>return (</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;div key={csm.id} className="card"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;div style={{ padding: "12px 16px", display: "flex", alignItems: "center", gap: 12, cursor: "pointer", borderBottom: isExpanded ? "0.5px solid #ddd" : "none", background: "#fff" }} onClick={() =&gt; setExpandedCSM(isExpanded &amp;&amp; filteredCSMs.length &gt; 1 ? null : csm.id)}&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                  </span>&lt;Avatar name={srcCSM.name || "?"} color={CSM_COLORS[ci % CSM_COLORS.length]} /&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                  </span>&lt;div style={{ flex: 1, minWidth: 0 }}&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;input value={srcCSM.name} onChange={e =&gt; renameCSM(csm.id, e.target.value)} onClick={e =&gt; e.stopPropagation()} style={{ fontSize: 15, fontWeight: 500, border: "none", background: "transparent", padding: 0, width: "100%", outline: "none" }} placeholder="CSM name" /&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                  </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                  </span>&lt;div style={{ display: "flex", gap: 6, alignItems: "center", flexShrink: 0, flexWrap: "wrap" }}&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;StatusBadge status="In Progress" /&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;span style={{ fontSize: 12, fontWeight: 500, color: CSM_COLORS[ci % CSM_COLORS.length] }}&gt;{inProg}&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>{redCount &gt; 0 &amp;&amp; &lt;span style={{ fontSize: 11, background: "#FCEBEB", color: "#791F1F", padding: "2px 7px", borderRadius: 20, fontWeight: 500 }}&gt;{redCount} red&lt;/span&gt;}</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;span style={{ fontSize: 12, color: "#666" }}&gt;{srcCSM.clients.length} accts&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;span style={{ fontSize: 12, color: "#aaa" }}&gt;{isExpanded ? "▲" : "▼"}&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                  </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>{isExpanded &amp;&amp; (</p>
+<p class="p1"><span class="Apple-converted-space">                  </span>&lt;div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>{csm.clients.length === 0 &amp;&amp; &lt;div style={{ padding: 16, fontSize: 13, color: "#666" }}&gt;No accounts match the current filter.&lt;/div&gt;}</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>{csm.clients.map((cl, idx) =&gt; (</p>
+<p class="p1"><span class="Apple-converted-space">                      </span>&lt;div key={cl.id} style={{ padding: "12px 16px", borderBottom: idx &lt; csm.clients.length - 1 ? "0.5px solid #eee" : "none" }}&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", marginBottom: 8 }}&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                          </span>&lt;HealthDot health={cl.health} /&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                          </span>&lt;input value={cl.name} onChange={e =&gt; updateClient(csm.id, cl.id, "name", e.target.value)} style={{ fontSize: 13, fontWeight: 500, border: "none", background: "transparent", padding: 0, flex: "1 1 100px", minWidth: 80, outline: "none" }} placeholder="Client name" /&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                          </span>&lt;select value={cl.status} onChange={e =&gt; updateClient(csm.id, cl.id, "status", e.target.value)}&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>{STATUSES.map(s =&gt; &lt;option key={s}&gt;{s}&lt;/option&gt;)}</p>
+<p class="p1"><span class="Apple-converted-space">                          </span>&lt;/select&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                          </span>&lt;select value={cl.health} onChange={e =&gt; updateClient(csm.id, cl.id, "health", e.target.value)}&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;option&gt;Green&lt;/option&gt;&lt;option&gt;Yellow&lt;/option&gt;&lt;option&gt;Red&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                          </span>&lt;/select&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                          </span>&lt;select value={cl.product} onChange={e =&gt; updateClient(csm.id, cl.id, "product", e.target.value)}&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>{PRODUCTS.map(p =&gt; &lt;option key={p}&gt;{p}&lt;/option&gt;)}</p>
+<p class="p1"><span class="Apple-converted-space">                          </span>&lt;/select&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                          </span>&lt;button onClick={() =&gt; removeClient(csm.id, cl.id)} style={{ fontSize: 12, padding: "3px 8px", color: "#888" }}&gt;✕&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;textarea value={cl.notes} onChange={e =&gt; updateClient(csm.id, cl.id, "notes", e.target.value)} placeholder="Status update &amp; next steps..." rows={2} style={{ width: "100%", fontSize: 12, padding: "6px 8px", background: "#f9f9f7", border: "0.5px solid #ddd", borderRadius: 6 }} /&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>))}</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;div style={{ padding: "10px 16px", display: "flex", justifyContent: "space-between", background: "#f9f9f7" }}&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                      </span>&lt;button onClick={() =&gt; addClient(csm.id)}&gt;+ Add client&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                      </span>&lt;button onClick={() =&gt; removeCSM(csm.id)} style={{ color: "#888" }}&gt;Remove CSM&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                  </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>)}</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>);</p>
+<p class="p1"><span class="Apple-converted-space">          </span>})}</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div style={{ display: "flex", gap: 8, alignItems: "center", marginTop: 4 }}&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;input value={newCSMName} onChange={e =&gt; setNewCSMName(e.target.value)} onKeyDown={e =&gt; e.key === "Enter" &amp;&amp; addCSM()} placeholder="New CSM name..." style={{ fontSize: 13, flex: 1, maxWidth: 240, padding: "6px 10px" }} /&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;button onClick={addCSM}&gt;+ Add CSM&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>);</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">ReactDOM.createRoot(document.getElementById("root")).render(&lt;Dashboard /&gt;);</p>
+<p class="p1">&lt;/script&gt;</p>
+<p class="p1">&lt;/body&gt;</p>
+<p class="p1">&lt;/html&gt;</p>
+</body>
+</html>
