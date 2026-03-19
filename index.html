@@ -194,7 +194,7 @@ function Dashboard() {
             const srcCSM = csms.find(c => c.id === csm.id);
             const inProg = srcCSM.clients.filter(cl => cl.status === "In Progress").length;
             const redCount = srcCSM.clients.filter(cl => cl.health === "Red").length;
-            const isExpanded = expandedCSM === csm.id || filteredCSMs.length === 1;
+            const isExpanded = activeTab === "all" || expandedCSM === csm.id || filteredCSMs.length === 1;
             return (
               <div key={csm.id} className="card">
                 <div style={{ padding: "12px 16px", display: "flex", alignItems: "center", gap: 12, cursor: "pointer", borderBottom: isExpanded ? "0.5px solid #ddd" : "none", background: "#fff" }} onClick={() => setExpandedCSM(isExpanded && filteredCSMs.length > 1 ? null : csm.id)}>
